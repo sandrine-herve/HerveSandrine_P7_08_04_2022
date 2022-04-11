@@ -4,17 +4,20 @@
 <!-- bouton de déconnexion -->
     <button v-on:click.prevent='logout()' type="button" class="btn btn-secondary " > Se déconnecter !</button>
 <!-- bouton de suppression de compte -->
-    <button v-on:click.prevent='deleteCount()' type='button' class='btn btn-danger'> supprimer votre compte !</button>
+    <button v-on:click.prevent='deleteCount(userId)' type='button' class='btn btn-danger'> supprimer votre compte !</button>
   </div>
 </template>
 
 
 <script>
+import axios from 'axios'
+
 export default {
   name:'mur',
   data() {
     return {
       name:'',
+      userId: JSON.parse(this.$localStorage.get('userId')),
       
     } 
   },
@@ -37,6 +40,23 @@ export default {
       localStorage.removeItem('isAdmin');
       this.$router.push('/');
       },
+    
+    deleteCount: function (userId) {
+      let token = localStorage.getItem('token');
+      axios.delete(`http://localhost:3000/api/users/${userId}`,
+      {
+          headers: {
+            'content-type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          }
+        })
+        .then(() =>{
+          localStorage.clear();
+          this.$router.push('/');
+          alert('Votre compte a été supprimé !')
+        })
+        .catch(error => console.log(error))
+    }
   },
 
 }

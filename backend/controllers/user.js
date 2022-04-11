@@ -125,11 +125,9 @@ module.exports = {
      deleteUser: function(req, res ) {
       const headerAuth = req.headers['authorization'];
       const userId = jwtUtils.getUserId(headerAuth);
-      const isAdmin = jwtUtils.getAdmin(headerAuth);
 
-      if (userId === req.body.id || isAdmin === true){
         models.User.findOne({
-            where: {id: req.body.id},
+            where: {id: req.params.userId},
         })
       
         .then( (user) => {
@@ -139,8 +137,7 @@ module.exports = {
         }
         )
         .catch((error) => {res.status(400).json({ error: error, message: "Une erreur est survenue" })});
-      } else {
-        res.status(404).json({ 'error': 'Vous ne pouvez pas effectuer cette action !' });}
+      
     },
     //     const headerAuth = req.headers['authorization'];
     //     const userId = jwtUtils.getUserId(headerAuth);
