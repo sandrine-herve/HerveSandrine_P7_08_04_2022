@@ -9,7 +9,7 @@ const router = express.Router();
     router.post('/new', multer, post.createPost);
     router.get('/getOne', multer, post.getOnePost);
     router.get('/getAll', multer, post.getAllPost);
-    router.delete('/delete', multer, post.deletePost);
+    router.delete('/:id', multer, post.deletePost);
     // router.put('/update',multer, post.updatePost);
 
 

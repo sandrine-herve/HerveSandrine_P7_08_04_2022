@@ -22,8 +22,7 @@
             <img :src=" 'http://localhost:3000/images/' + post.media " alt= "image du post " />
           </div>
           <!-- bouton supprimer le post -->
-          <button v-if="post.userId == userId || isAdmin == true" v-on:click.prevent="deletePost()" class="btn btn-danger"> Supprimer </button>
-          
+          <button v-on:click.prevent='deletePost(post.id)' v-if="post.userId == userId || isAdmin == true" class="btn btn-danger"> Supprimer </button>
         </div>
       </div>
       <!-- fin les posts -->
@@ -42,6 +41,7 @@ export default {
   data() {
     return {
       name:'',
+      data:JSON.parse(this.$localStorage.get('user')),
       userId: JSON.parse(this.$localStorage.get('userId')),
       isAdmin:JSON.parse(this.$localStorage.get('isAdmin')), 
       posts:[],
@@ -51,7 +51,9 @@ export default {
            id:'',
            media:'',
       post:'',
-    } 
+      
+    }
+      
   },
   mounted() {
     if (localStorage.name) {
@@ -71,11 +73,6 @@ export default {
         this.posts = res.data
         })
       .catch(error => console.log(error));
-      
-      console.log(userId) 
-       console.log(post.userId)
-       console.log(isAdmin)
-
     
   },
   created() {
@@ -89,7 +86,6 @@ export default {
     
   },
   methods: {
-     
     // déconnexion
     logout: function () {
       localStorage.removeItem('token');
@@ -100,12 +96,11 @@ export default {
       },
     // supprimer un compte utilisateur
     deleteCount: function (userId) {
-      let token = localStorage.getItem('token');
       axios.delete(`http://localhost:3000/api/users/${userId}`,
       {
           headers: {
             'content-type': 'application/json',
-            'Authorization': 'Bearer ' + token
+            'Authorization': 'Bearer ' + this.token
           }
         })
         .then(() =>{
@@ -116,11 +111,20 @@ export default {
         .catch(error => console.log(error))
     },
     // supprimer un post
-    deletePost: function() {
-          axios.delete('http://localhost:3000/api/posts/delete' )
+    deletePost: function (id) {
+          axios.delete(`http://localhost:3000/api/posts/${id}`,
+           {
+          headers: {
+            'content-type': 'application/json',
+            "Accept": "application/json",
+            'Authorization': 'Bearer ' + this.token
+          }
+        } )
           .then(response => {
               console.log(response.data)
-              this.comments =response.data
+              this.comments =response.data;
+              alert('Votre message a été supprimé !')
+              location.reload(true);
             })
             .catch(error => console.log(error));
        },
@@ -146,5 +150,3 @@ img{
 
 
 </style>
-
-// todolist: <p> a revoir!

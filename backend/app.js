@@ -26,6 +26,8 @@ app.use((req, res, next) => {
     next();
 });
 
+
+
 //Cookies
 const expiresDate = new Date(Date.now() + 60 * 60 * 1000);
 

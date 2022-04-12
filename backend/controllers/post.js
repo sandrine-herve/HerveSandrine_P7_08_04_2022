@@ -90,7 +90,7 @@ module.exports = {
     deletePost: function(req, res) {
         
         models.Post.findOne({
-            where: {id: req.body.id},
+            where: {id: req.params.id},
         })
         .then( (post) => {
             post.destroy()
