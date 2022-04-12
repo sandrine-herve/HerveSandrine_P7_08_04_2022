@@ -52,7 +52,7 @@ module.exports = {
         
 
     },
-    getOneComment: function (req, res) {
+    getComments: function (req, res) {
         models.Comment.findOne({
             where: { id: req.body.id },
             order: [['id', 'DESC']], 

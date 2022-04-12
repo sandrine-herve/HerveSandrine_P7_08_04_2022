@@ -24,6 +24,7 @@ module.exports = {
         const post = req.body.post;
         const title = req.body.title;
         const content = req.body.content;
+        // mediaPost = le nom de l'image qui s'enregistre dans la bdd
         const mediaPost = req.file ? `${req.file.filename}` :  "";
         
 
