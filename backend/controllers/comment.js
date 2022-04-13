@@ -53,8 +53,8 @@ module.exports = {
 
     },
     getComments: function (req, res) {
-        models.Comment.findOne({
-            where: { id: req.body.id },
+        models.Comment.findAll({
+            where: { postId: req.params.postId },
             order: [['id', 'DESC']], 
         }).then(result => {
             res.status(200).json(result);

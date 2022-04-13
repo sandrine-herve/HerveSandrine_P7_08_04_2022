@@ -25,7 +25,7 @@
           </div>
           <div class="form-group ">
             <div class="form-group ">
-              <input type="file" accept=".jpeg, .jpg, .png, .webp, .gif" v-on:change="uploadFile" id="file" class="input-file" name='image' aria-label="Image du post">
+              <input type="file" accept=".jpeg, .jpg, .png, .webp, .gif" v-on:change="uploadFile" id="file" class="input-file" name='media' aria-label="Image du post">
             </div>
           </div>  
         </div> 
@@ -53,11 +53,13 @@
           <!-- bouton supprimer le post -->
           <button v-on:click.prevent='deletePost(post.id)' v-if="post.userId == userId || isAdmin == true" class="btn btn-danger"> Supprimer </button>
           <!-- les commentaires -->
-          <button @click ="showComment(comment.postId)" type="button" class="btn btn-warning btn-sm"> Voir les commentaires </button>
-          <div v-show ='showComment' id='show_comment'>
-            <div id="commentdiv" class="comment" v-if="comment.postId == post.id">
+          <button @click ="showComment(post.id)" type="button" class="btn btn-warning btn-sm"> Voir les commentaires </button>
+          <div v-show ='showComment' id='show_comment' >
+            <div id="commentdiv" class="comment" v-for="comment in comments" :key="comment.id" >
+              <div v-if="comment.postId == post.id">
               <p class="content">{{comment.content}}</p>
               <p class="date">{{comment.createdAt}}</p>
+              </div>
             </div>
             <!-- répondre au post -->
             <form>
@@ -86,10 +88,10 @@ export default {
   img:'',
   data() {
     return {
-      name:'',
       data:JSON.parse(this.$localStorage.get('user')),
       userId: JSON.parse(this.$localStorage.get('userId')),
-      isAdmin:JSON.parse(this.$localStorage.get('isAdmin')), 
+      isAdmin:JSON.parse(this.$localStorage.get('isAdmin')),
+      name:'',
       posts:[],
            title:'',
            content:'',
@@ -97,8 +99,7 @@ export default {
            id:'',
            media:'',
       post:'',
-      comments:[],
-      comment:'',
+      comments:[]
       
 
       
@@ -110,14 +111,7 @@ export default {
       this.name = localStorage.name;
     }
     // posts
-    axios.get('http://localhost:3000/api/posts/getAll',
-     {
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json",
-          "Authorization": 'Bearer ' + this.token
-        }
-      }) 
+    axios.get('http://localhost:3000/api/posts/getAll') 
       .then(res => { 
         console.log(res.data)
         this.posts = res.data
@@ -178,13 +172,13 @@ export default {
             .catch(error => console.log(error));
     },
     // les commentaires
-    showComment: function(id) {
+    showComment: function(postId) {
         let show_comment = document.getElementById('show_comment');
         if(getComputedStyle(show_comment).display != "none"){
         show_comment.style.display = "none"
         } else {
             show_comment.style.display = "block"
-            axios.get(`http://localhost:3000/api/comments/getOne/${id}`)
+            axios.get(`http://localhost:3000/api/comments/getComments/${postId}`)
             .then(response => {
               console.log(response.data)
               this.comments =response.data
@@ -194,6 +188,7 @@ export default {
       },
     // creation nouveau post
     newPost: function () {
+        let token =localStorage.getItem('token');
         const post = {
           title: this.title,
           content: this.content,
@@ -211,7 +206,7 @@ export default {
         formData ,{
                   headers: {
                     
-                  'Authorization': 'Bearer ' + this.token
+                  'Authorization': 'Bearer ' + token
                   }
          }
         ).then(() => { 
