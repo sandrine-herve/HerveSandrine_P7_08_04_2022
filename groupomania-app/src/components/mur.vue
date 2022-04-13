@@ -61,15 +61,12 @@
               <p class="date">{{comment.createdAt}}</p>
               </div>
             </div>
-            <!-- répondre au post -->
-            <form>
-              <input type="text" id="comment" name="comment" placeholder="Laisse ton commentaire !" >
-              <button type="submit" id="btn_comment" class="btnLogin btn-primary btn-sm"> Envoyer ma réponse !</button>
-            </form>
           </div>
-          
-          
-
+          <!-- répondre au post -->
+          <form>
+            <input type="text" id="comment" name="comment" placeholder="Laisse ton commentaire !" >
+            <button type="submit" id="btn_comment" class="btnLogin btn-primary btn-sm"> Envoyer ma réponse !</button>
+          </form>
         </div>
       </div>
       <!-- fin les posts -->
@@ -173,18 +170,18 @@ export default {
     },
     // les commentaires
     showComment: function(postId) {
-        let show_comment = document.getElementById('show_comment');
-        if(getComputedStyle(show_comment).display != "none"){
+      let show_comment = document.getElementById('show_comment');
+      if(getComputedStyle(show_comment).display != "block"){
         show_comment.style.display = "none"
         } else {
             show_comment.style.display = "block"
-            axios.get(`http://localhost:3000/api/comments/getComments/${postId}`)
+          }
+      axios.get(`http://localhost:3000/api/comments/getComments/${postId}`)
             .then(response => {
               console.log(response.data)
               this.comments =response.data
             })
             .catch(error => console.log(error));
-      }
       },
     // creation nouveau post
     newPost: function () {
@@ -275,7 +272,7 @@ img{
 }
 
 #show_comment{
-  display: none;
+  display: block;
 }
 
 
