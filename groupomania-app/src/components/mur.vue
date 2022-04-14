@@ -58,9 +58,12 @@
             <div id="commentdiv" class="comment" v-for="comment in comments" :key="comment.id" >
               <div v-if="comment.postId == post.id">
               <p class="content">{{comment.content}}</p>
-              <p class="date">{{comment.createdAt}}</p>
+              <small class="date">{{comment.createdAt}}</small>
+              <!-- bouton supprimer le comment -->
+              <button v-on:click.prevent='deleteComment(comment.id)' v-if="comment.userId == userId || isAdmin == true" class="btn btn-danger btn-sm"> Supprimer </button>
               </div>
             </div>
+            <div id="noComment"></div>
           </div>
           <!-- répondre au post -->
           <form>
@@ -69,7 +72,7 @@
           </form>
         </div>
       </div>
-      <!-- fin les posts -->
+      <!-- fin des posts -->
     </div>
 
   </div>
@@ -153,17 +156,36 @@ export default {
     },
     // supprimer un post
     deletePost: function (id) {
+          let token =localStorage.getItem('token');
           axios.delete(`http://localhost:3000/api/posts/${id}`,
           {
           headers: {
             'content-type': 'application/json',
             "Accept": "application/json",
-            'Authorization': 'Bearer ' + this.token
+            'Authorization': 'Bearer ' + token
           }
         } )
           .then(response => {
               console.log(response.data)
               alert('Votre message a été supprimé !')
+              location.reload(true);
+            })
+            .catch(error => console.log(error));
+    },
+    // supprimer un commentaire
+    deleteComment: function (id) {
+          let token =localStorage.getItem('token');
+          axios.delete(`http://localhost:3000/api/comments/delete/${id}`,
+          {
+          headers: {
+            'content-type': 'application/json',
+            "Accept": "application/json",
+            'Authorization': 'Bearer ' + token
+          }
+        } )
+          .then(response => {
+              console.log(response.data)
+              alert('Votre commentaire a été supprimé !')
               location.reload(true);
             })
             .catch(error => console.log(error));
@@ -176,12 +198,15 @@ export default {
         } else {
             show_comment.style.display = "block"
           }
+      
       axios.get(`http://localhost:3000/api/comments/getComments/${postId}`)
             .then(response => {
               console.log(response.data)
               this.comments =response.data
             })
             .catch(error => console.log(error));
+      
+      
       },
     // creation nouveau post
     newPost: function () {

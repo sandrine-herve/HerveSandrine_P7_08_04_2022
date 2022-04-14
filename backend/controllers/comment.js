@@ -78,7 +78,7 @@ module.exports = {
     deleteComment: function(req, res) {
         
         models.Comment.findOne({
-            where: {id: req.body.id},
+            where: {id: req.params.id},
         })
         .then( (comment) => {
             comment.destroy()
