@@ -29,7 +29,7 @@ module.exports = {
         
 
         if (title == null || content == null) {
-            return res.status(400).json({'error': 'toto missing parameters'});
+            return res.status(400).json({'error': 'missing parameters'});
         }
 
         if (title.length <=  TITLE_LIMIT || content.length <= CONTENT_LIMIT ) {

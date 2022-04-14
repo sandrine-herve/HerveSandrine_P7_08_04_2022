@@ -53,7 +53,7 @@
           <!-- bouton supprimer le post -->
           <button v-on:click.prevent='deletePost(post.id)' v-if="post.userId == userId || isAdmin == true" class="btn btn-danger"> Supprimer </button>
           <!-- les commentaires -->
-          <button @click ="showComment(post.id)" type="button" class="btn btn-warning btn-sm"> Voir les commentaires </button>
+          <button @click ="showComment(post.id)" type="button" class="btn btn-warning"> Voir les commentaires </button>
           <div v-show ='showComment' id='show_comment' >
             <div id="commentdiv" class="comment" v-for="comment in comments" :key="comment.id" >
               <div v-if="comment.postId == post.id">
@@ -64,8 +64,8 @@
           </div>
           <!-- répondre au post -->
           <form>
-            <input type="text" id="comment" name="comment" placeholder="Laisse ton commentaire !" >
-            <button type="submit" id="btn_comment" class="btnLogin btn-primary btn-sm"> Envoyer ma réponse !</button>
+            <input v-model='content' type="text" id="content" name="content" placeholder="Ecris ton commentaire !" >
+            <button v-on:click='newComment(post.id)' type="button" id="btn_comment" class="btnLogin btn-primary btn-sm"> Envoyer ma réponse !</button>
           </form>
         </div>
       </div>
@@ -193,12 +193,12 @@ export default {
           media: this.img,
           // media: this.media,
           userId: this.userId,
-          
         }
         var formData = new FormData()
         formData.append('media', this.img)
         // formData.append('media', this.media);
         formData.append('post', JSON.stringify(post));
+
         axios.post('http://localhost:3000/api/posts/new',
         formData ,{
                   headers: {
@@ -217,8 +217,37 @@ export default {
                     console.log(error);
                     console.log("Votre message n'a pas pu etre posté !");
                 });
-        
-        
+    },
+    newComment: function(postId) {
+        let token =localStorage.getItem('token');
+        console.log(postId)
+        const comment = {
+          content : this.content,
+          userId : this.userId,
+          media : this.img,
+        }
+
+        var formData = new FormData()
+        formData.append('media', this.img)
+        // formData.append('media', this.media);
+        formData.append('comment', JSON.stringify(comment));
+
+        axios.post(`http://localhost:3000/api/comments/new/${postId}`, formData,
+        {
+          headers: {
+            
+            "Authorization": 'Bearer ' + token
+          }
+        })
+        .then(() => {
+          console.log('commentaire envoyé' + comment );
+          alert('Votre commentaire a bien été envoyé !')
+          location.reload(true);
+        })
+        .catch((error) => {
+                    console.log(error);
+                    console.log("Votre message n'a pas pu etre posté !");
+                });
     },
     uploadFile(e) {
       // this.img = e.target.files[0];

@@ -7,7 +7,7 @@ const multer = require('../middleware/multer-config.js');
 
 
     //Comments routes
-    router.post('/new', multer, comment.createComment);
+    router.post('/new/:postId', multer, comment.createComment);
     router.get('/getComments/:postId', multer, comment.getComments);
     router.get('/getAll', multer, comment.getAllComment);
     router.delete('/delete', comment.deleteComment );

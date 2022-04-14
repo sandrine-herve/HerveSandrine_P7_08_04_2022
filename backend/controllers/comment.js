@@ -12,45 +12,41 @@ const models = require('../models')
 //Routes
 module.exports = {
     createComment: function(req, res) {
-        //getting auth header.
         const headerAuth = req.headers['authorization'];
         const userId = jwtUtils.getUserId(headerAuth);
 
-        //params
-        const content = req.body.content;
-        const dateAdd = Date.now();
-        const postId = req.body.postId;
-        const mediaComment = req.file ? `${req.file.filename}` :  "";
-        const comment = {
+        //Constants
+        const TITLE_LIMIT = 2;
+        const CONTENT_LIMIT = 4;
+
+         //params.
+         const comment = JSON.parse(req.body.comment);
+         const content = comment.content;
+         const postId = req.params.postId;
+
+         if (content == null) {
+            return res.status(400).json({'error': 'missing parameters'});
+        }
+
+        models.Comment.create({
             content: content,
             userId: userId,
             postId: postId,
-            media: mediaComment,
-            dateAdd: dateAdd
-        }
-
-        if ( content == null) {
-            return res.status(400).json({ 'error':'invalid parameter'});
-        }
-
-        console.log(comment);
-
-        models.Comment.create(comment)
+            dateAdd: Date.now()
+        })
         .then(result => {
             res.status(201).json({
                 message:'Comment created successfully !',
-                comment: result
+                comment: result,
+            
             });
         })
-
         .catch(error => {
             res.status(500).json({
                 message: 'Something went wrong !',
                 error: error
-            })
-        });
-        
-
+            });
+        })
     },
     getComments: function (req, res) {
         models.Comment.findAll({
@@ -64,7 +60,6 @@ module.exports = {
             });
         });
     },
-    
 
     getAllComment: function (req, res) {
         models.Comment.findAll({
