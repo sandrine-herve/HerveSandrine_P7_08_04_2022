@@ -26,8 +26,8 @@ export default {
 }
 </script>
 <style scoped lang="scss">
-.home {
-  background-color: #b2b2b2;
-  
+
+img{
+  width: 40%;
 }
 </style>

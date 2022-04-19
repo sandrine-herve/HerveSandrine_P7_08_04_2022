@@ -30,7 +30,7 @@
           </div>  
         </div> 
         
-          <button v-on:click='newPost()' type="button" class="btn btn-secondary" id='login'>Partager votre post !</button>
+          <button v-on:click='newPost()' type="button" class="btn btn-secondary m-3" id='login'>Partager votre post !</button>
         
       </form>
 
@@ -53,22 +53,23 @@
           <!-- bouton supprimer le post -->
           <button v-on:click.prevent='deletePost(post.id)' v-if="post.userId == userId || isAdmin == true" class="btn btn-danger"> Supprimer </button>
           <!-- les commentaires -->
-          <button @click ="showComment(post.id)" type="button" class="btn btn-warning"> Voir les commentaires </button>
+          <button @click ="showComment(post.id)" type="button" class="btn btn-warning m-3"> Voir les commentaires </button>
           <div v-show ='showComment' id='show_comment' >
             <div id="commentdiv" class="comment" v-for="comment in comments" :key="comment.id" >
               <div v-if="comment.postId == post.id">
-              <p class="content">{{comment.content}}</p>
-              <small class="date">{{comment.createdAt}}</small>
-              <!-- bouton supprimer le comment -->
-              <button v-on:click.prevent='deleteComment(comment.id)' v-if="comment.userId == userId || isAdmin == true" class="btn btn-danger btn-sm"> Supprimer </button>
+                <p class="content">{{comment.content}}</p>
+                <small class="date">{{comment.createdAt}}</small>
+                <!-- bouton supprimer le comment -->
+                
+                <button v-on:click.prevent='deleteComment(comment.id)' v-if="comment.userId == userId || isAdmin == true" class="btn btn-danger btn-sm m-3"> Supprimer </button>
               </div>
-            </div>
-            <div id="noComment"></div>
+            </div>  
           </div>
+          <!-- <div v-if="comment.length == 0" id="noComment">no comment </div> -->
           <!-- répondre au post -->
           <form>
             <input v-model='content' type="text" id="content" name="content" placeholder="Ecris ton commentaire !" >
-            <button v-on:click='newComment(post.id)' type="button" id="btn_comment" class="btnLogin btn-primary btn-sm"> Envoyer ma réponse !</button>
+            <button v-on:click='newComment(post.id)' type="button" id="btn_comment" class="btnLogin btn-primary btn-sm m-3"> Envoyer ma réponse !</button>
           </form>
         </div>
       </div>
@@ -80,7 +81,7 @@
 </template>
 
 
-<script>
+<script type="text/javascript">
 import axios from 'axios'
 
 export default {
@@ -140,19 +141,88 @@ export default {
       },
     // supprimer un compte utilisateur
     deleteCount: function (userId) {
+      // let token =localStorage.getItem('token');
       axios.delete(`http://localhost:3000/api/users/${userId}`,
-      {
-          headers: {
-            'content-type': 'application/json',
-            'Authorization': 'Bearer ' + this.token
-          }
-        })
+      // {
+      //     headers: {
+      //       'content-type': 'application/json',
+      //       'Authorization': 'Bearer ' + token
+      //     }
+      //   }
+      )
         .then(() =>{
           localStorage.clear();
           this.$router.push('/');
           alert('Votre compte a été supprimé !')
         })
         .catch(error => console.log(error))
+    },
+    // creation nouveau post
+    newPost: function () {
+        let token =localStorage.getItem('token');
+        const post = {
+          title: this.title,
+          content: this.content,
+          // nom fichier url
+          media: this.img,
+          // media: this.media,
+          userId: this.userId,
+        }
+        var formData = new FormData()
+        formData.append('media', this.img)
+        // formData.append('media', this.media);
+        formData.append('post', JSON.stringify(post));
+
+        axios.post('http://localhost:3000/api/posts/new',
+        formData ,{
+                  headers: {
+                    
+                  'Authorization': 'Bearer ' + token
+                  }
+         }
+        ).then(() => { 
+                  console.log('post envoyé !')
+                  console.log( post )
+                  this.post ==="";
+                  alert('Votre message a bien été envoyé !')
+                  location.reload(true);
+                })
+                .catch((error) => {
+                    console.log(error);
+                    console.log("Votre message n'a pas pu etre posté !");
+                });
+    },
+    // création de comment
+    newComment: function(postId) {
+        let token =localStorage.getItem('token');
+        console.log(postId)
+        const comment = {
+          content : this.content,
+          userId : this.userId,
+          media : this.img,
+        }
+
+        var formData = new FormData()
+        formData.append('media', this.img)
+        // formData.append('media', this.media);
+        formData.append('comment', JSON.stringify(comment));
+
+        axios.post(`http://localhost:3000/api/comments/new/${postId}`, formData,
+        {
+          headers: {
+            
+            "Authorization": 'Bearer ' + token
+          }
+        })
+        .then(() => {
+          console.log('commentaire envoyé' + comment );
+          alert('Votre commentaire a bien été envoyé !')
+          location.reload(true);
+        })
+        .catch((error) => {
+                    console.log(error);
+                    console.log("Votre message n'a pas pu etre posté !");
+                });
     },
     // supprimer un post
     deletePost: function (id) {
@@ -192,88 +262,35 @@ export default {
     },
     // les commentaires
     showComment: function(postId) {
-      let show_comment = document.getElementById('show_comment');
-      if(getComputedStyle(show_comment).display != "block"){
-        show_comment.style.display = "none"
-        } else {
+        let show_comment = document.getElementById('show_comment');
+        if(getComputedStyle(show_comment).display != "block"){
+          show_comment.style.display = "none"
+          } else {
             show_comment.style.display = "block"
-          }
-      
-      axios.get(`http://localhost:3000/api/comments/getComments/${postId}`)
+            }
+        axios.get(`http://localhost:3000/api/comments/getComments/${postId}`)
             .then(response => {
-              console.log(response.data)
               this.comments =response.data
+              console.log(response.data)
+              
+              // if ( this.comments.length = 0) {
+              //   // crée un nouvel élément div
+              //   var newDiv = document.createElement("div");
+              //   // et lui donne un peu de contenu
+              //   var noCommentP = document.createTextNode('Il n\'y a pas de commentaires !');
+              //   // ajoute le nœud texte au nouveau div créé
+              //   newDiv.appendChild(noCommentP);
+
+              //   // ajoute le nouvel élément créé et son contenu dans le DOM
+              //   var noComment = document.getElementById('noComment');
+              //   document.body.insertBefore(newDiv, noComment);
+              // }
+              
             })
             .catch(error => console.log(error));
-      
-      
       },
-    // creation nouveau post
-    newPost: function () {
-        let token =localStorage.getItem('token');
-        const post = {
-          title: this.title,
-          content: this.content,
-          // nom fichier url
-          media: this.img,
-          // media: this.media,
-          userId: this.userId,
-        }
-        var formData = new FormData()
-        formData.append('media', this.img)
-        // formData.append('media', this.media);
-        formData.append('post', JSON.stringify(post));
-
-        axios.post('http://localhost:3000/api/posts/new',
-        formData ,{
-                  headers: {
-                    
-                  'Authorization': 'Bearer ' + token
-                  }
-         }
-        ).then(() => { 
-                  console.log('post envoyé !')
-                  console.log( post )
-                  this.post ==="";
-                  alert('Votre message a bien été envoyé !')
-                  location.reload(true);
-                })
-                .catch((error) => {
-                    console.log(error);
-                    console.log("Votre message n'a pas pu etre posté !");
-                });
-    },
-    newComment: function(postId) {
-        let token =localStorage.getItem('token');
-        console.log(postId)
-        const comment = {
-          content : this.content,
-          userId : this.userId,
-          media : this.img,
-        }
-
-        var formData = new FormData()
-        formData.append('media', this.img)
-        // formData.append('media', this.media);
-        formData.append('comment', JSON.stringify(comment));
-
-        axios.post(`http://localhost:3000/api/comments/new/${postId}`, formData,
-        {
-          headers: {
-            
-            "Authorization": 'Bearer ' + token
-          }
-        })
-        .then(() => {
-          console.log('commentaire envoyé' + comment );
-          alert('Votre commentaire a bien été envoyé !')
-          location.reload(true);
-        })
-        .catch((error) => {
-                    console.log(error);
-                    console.log("Votre message n'a pas pu etre posté !");
-                });
-    },
+    // let noComment = document.getElementById('noComment');
+    //     noComment.innerHTML = "Il n'y a pas de commentaire !"
     uploadFile(e) {
       // this.img = e.target.files[0];
        this.img = e.target.files[0];

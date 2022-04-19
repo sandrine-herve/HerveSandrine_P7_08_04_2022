@@ -9,7 +9,6 @@
 
 <style lang="scss">
 #app {
-  background-color: #b2b2b2;
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

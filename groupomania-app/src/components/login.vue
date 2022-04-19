@@ -45,19 +45,11 @@ export default {
     
 
       login : function () {
-          let token = JSON.parse(localStorage.getItem('data'));
               axios.post('http://localhost:3000/api/users/login', {
                   email: this.email,
                   password: this.password,
-                  name: this.name,
-                  isAdmin: this.isAdmin,
-              },
-              {
-                  headers: {
-                    'Content-type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                  }
-              }).then((response) => {
+              }
+              ).then((response) => {
                   localStorage.setItem("token",response.data.token);
                   localStorage.setItem("userId", response.data.userId);
                   localStorage.setItem("name", response.data.name);

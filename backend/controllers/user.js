@@ -139,6 +139,7 @@ module.exports = {
         .catch((error) => {res.status(400).json({ error: error, message: "Une erreur est survenue" })});
       
     },
+    
     //     const headerAuth = req.headers['authorization'];
     //     const userId = jwtUtils.getUserId(headerAuth);
     
