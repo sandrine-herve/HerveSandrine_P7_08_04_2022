@@ -47,18 +47,28 @@ server.on('listening', () => {
 });
 
 // Connexion a la base de donnée MySQL avec SEquelize
-const sequelize = new Sequelize("database_development", "root", "1MySQLCompteDauphin!", {
-    dialect: "mysql",
-    host: "localhost"
+// const sequelize = new Sequelize("database_development", "root", "1MySQLCompteDauphin!", {
+//     dialect: "mysql",
+//     host: "localhost"
+// });
+
+// try {
+//     sequelize.authenticate();
+//     console.log('Connecté à la base de données MySQL!');
+//   } catch (error) {
+//     console.error('Impossible de se connecter, erreur suivante :', error);
+//   }
+
+const db = require('./models');
+
+db.sequelize.sync().then(() => {
+    app.listen(port, () => {
+        console.log("Server running on port "+port);
+    });
 });
 
-try {
-    sequelize.authenticate();
-    console.log('Connecté à la base de données MySQL!');
-  } catch (error) {
-    console.error('Impossible de se connecter, erreur suivante :', error);
-  }
-server.listen(port);
+
+// server.listen(port);
 
 
 // server.on('error', errorHandler);
